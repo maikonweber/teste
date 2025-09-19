@@ -15,15 +15,16 @@ export class DocumentController {
     schema: {
       type: 'object',
       properties: {
-        file: {
+        pdfs: {
           type: 'string',
           format: 'binary',
           description: 'Arquivo PDF ou imagem para upload',
         },
+        
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('pdfs'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const text = await this.documentService.startTesseract(file);
 
