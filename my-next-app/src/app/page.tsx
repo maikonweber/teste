@@ -11,6 +11,10 @@ export default function RagPdfChat() {
   const [tokens, setTokens] = useState<number | null>(null);
   const [resposta, setResposta] = useState("");
  
+
+  const API_URL = "http://localhost:3000";
+
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     setPdfFiles([...e.target.files]);
@@ -29,14 +33,14 @@ export default function RagPdfChat() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/raq?q=${encodeURIComponent(question)}`
+       `${API_URL}/rag?q=${encodeURIComponent(question)}`,
       );
       const data = await response.json();
 
-      // Guarda cada campo separadamente
-      setResposta(data.resposta || data.answer || "Nenhuma resposta encontrada.");
-      setDocumentos(data.documentos || []);
-      setTokens(data.tokens ?? null);
+      const ans = data.answer || {};
+      setResposta(ans.resposta || "Nenhuma resposta encontrada.");
+      setDocumentos(ans.documentos || []);
+      setTokens(ans.tokens?.totalTokens ?? null);
     } catch (error) {
       setResposta("Erro ao buscar resposta.");
     } finally {
@@ -114,7 +118,7 @@ export default function RagPdfChat() {
           <input
             type="text"
             placeholder="Digite sua pergunta sobre o PDF..."
-            className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+            className="flex-1 color-red px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAsk()}
